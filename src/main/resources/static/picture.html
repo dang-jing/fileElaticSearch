@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+    #outer {
+      width: 600px;
+      margin: 50px auto;
+      background: plum;
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<script src="jQuery/jquery-3.6.0.js" type="text/javascript" charset="UTF-8"></script>
+<script type="text/javascript">
+    var list = [];
+    <!--$.ajax({
+        type:"get",
+        url:"http://localhost:8080/getPaths",
+        dataType:"json",
+        success:function(data) {
+            console.log(data);
+        }
+    })-->
+</script>
+<body>
+
+    <body>
+    <div id="outer">
+        <p id="info">这是第几张图片</p>
+        <!--http://localhost:8080/tupian   list=data.a;-->
+        <img src="" alt="" style="width: 560px;height: 300px">
+        <button id="prev" onclick="getProImg()">上一张</button>
+        <button id="nextv" onclick="getNextImg()">下一张</button>
+    </div>
+    </body>
+</body>
+</html>

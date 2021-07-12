@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>图片轮换（上、下）</title>
+  <style type="text/css">
+    #outer {
+      width: 600px;
+      margin: 50px auto;
+      background: plum;
+      padding: 10px;
+      text-align: center;
+    }
+
+  </style>
+
+  <script type="text/javascript">
+    /**
+     * ajax请求
+     * @description 自己写的ajax请求
+     * @param {Object} options 请求配置信息
+     * @param {String} options.url 请求地址
+     * @param {String} options.dataType 数据格式 json/text/xml
+     * @param {String} options.method 请求方式，默认get
+     * @param {Object} options.data 请求参数，json格式
+     * [options={url, dataType, method}]
+     * @returns {Object} 返回一个Promise对象
+     */
+    function ajax(options) {
+      function transformData(object) {
+        let oStr = '';
+        for (var key in object) {
+          oStr += key + "=" + object[key] + "&";
+        };
+        return oStr.slice(0, -1);
+      };
+      return new Promise(function (resolve, reject) {
+        let method = options.method ? options.method.toUpperCase() : 'GET';
+        let xhr = new XMLHttpRequest(); //创建请求对象
+        if (method === 'POST') {
+          xhr.open(method, options.url); //连接服务器
+          xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded"); //post请求添加请求头
+          xhr.send(transformData(options.data)); //发送请求，带处理过的参数
+        } else if (method === 'GET') {
+          let url = options.data ? options.url + '?' + transformData(options.data) : options.url;
+          xhr.open(method, url); //get请求url需要拼接参数
+          xhr.send();
+        } else { //其他请求方式
+          xhr.open(method, options.url);
+          xhr.send();
+        };
+        //接收返回结果
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === 4) {
+            if (
+              (xhr.status >= 200 && xhr.status < 300) ||
+              xhr.status === 304
+            ) {
+              let dataType = options.dataType || 'TEXT',
+                data = null;
+              switch (dataType.toUpperCase()) {
+                case 'JSON':
+                  data = JSON.parse(xhr.responseText);
+                  break;
+                case 'TEXT':
+                  data = xhr.responseText;
+                  break;
+                case 'XML':
+                  data = xhr.responseXML;
+                  break;
+              };
+              resolve(data);
+            } else {
+              reject({
+                statusCode: xhr.status,
+                msg: '请求错误'
+              });
+            }
+          };
+        }
+      });
+    };
+
+    /*定义全局变量*/
+    var index = 0;
+    var img = ["https://192.168.3.85:8080/tupian", "D:\图片\1-100\0a11b0deeeb34b7ea52d84a6899d9918.jpg",
+      "D:\图片\1-100\0bc93024eb9c4f6991a664e58d779279.jpg"
+    ];
+    var imgObject;
+
+    window.onload = function () {
+      /*当页面加载完成后再执行这部分js代码*/
+      imgObject = document.getElementsByTagName("img")[0];
+      var info = document.getElementById("info");
+      info.innerHTML = "一共是" + img.length + "张图片，现在是第" + (index + 1) + "张";
+      
+      // post请求
+      let ajax_post = myAjax({url:'192.168.3.85:8080/getPaths', method:'POST', dataType: 'json', data: {name:'ysh',age:23}});
+      // get请求
+      let ajax_get = myAjax({url:'192.168.3.85:8080/getPaths', method:'GET', dataType: 'json', data: {name:'ysh',age:23}});
+      Promise.all([ajax_post, ajax_get]).then(res => {
+          console.log(res);
+          img=res.data;
+      }).catch( err => {
+          console.log('请求出错了', err);
+      });
+
+    }
+
+    function getNextImg() {
+      // var imgObject = document.getElementsByTagName("img")[0];
+      var info = document.getElementById("info");
+      index++;
+      if (index > img.length - 1) {
+        /*当图片已经翻到最后一张时，跳转到第一张图片*/
+        index = 0;
+      }
+      imgObject.src = img[index];
+      info.innerHTML = "一共是" + img.length + "张图片，现在是第" + (index + 1) + "张";
+
+    }
+
+    function getProImg() {
+
+      // alert(--index);/*写代码时的测试*/
+      // var imgObject = document.getElementsByTagName("img")[0];
+      var info = document.getElementById("info");
+      index--;
+      if (index < 0) {
+        /*当图片已经翻到第张时，跳转到最后一张图片*/
+        index = img.length - 1;
+      }
+      imgObject.src = img[index];
+      info.innerHTML = "一共是" + img.length + "张图片，现在是第" + (index + 1) + "张";
+    }
+
+  </script>
+</head>
+
+<body>
+  <div id="outer">
+    <p id="info">这是第几张图片</p>
+    <img src="http://localhost:8080/tupian" alt="" style="width: 560px;height: 300px">
+    <button id="prev" onclick="getProImg()">上一张</button>
+    <button id="nextv" onclick="getNextImg()">下一张</button>
+  </div>
+</body>
+
+</html>

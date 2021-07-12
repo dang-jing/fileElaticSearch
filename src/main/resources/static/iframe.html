@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script>
+    fileUpload(e) {
+       var filrarr = document.getElementById("uploadFile").files;
+
+          var formdata = new FormData();//创建一个表单
+
+          for(var i = 0; i < filrarr.length; i++){
+
+              formdata.append("file", filrarr[i]);
+          }
+          axios({
+                     method: 'post',
+                     url: '/upload',
+                     data: formdata,
+                     withCredentials: true,
+                 }).then((res) => {
+                     console.log(res);
+                    // this.status =res.data.status;
+                    //console.log("文件上传成功")
+                 })
+
+      },
+
+</script>
+<body>
+
+    <input type="radio" name="name" value="截图">截图<br>
+    <input type="radio" name="name" value="拍照">拍照<br>
+
+    类型：<input type="text" name="model"><br>
+    图片类型：<input type="text" name="type"><br>
+        <input type="submit" value="提交">
+
+
+    <div class="attachFile flex">
+        <div>
+            <p><input type="file" id="uploadFile"
+                      style="display: initial;border: 0;
+			            background: #005394;
+			            border-radius: 5px;
+			            color: #fff;
+			            padding: 5px;
+			            width: 200px;" @change="fileUpload"></input>
+            </p>
+        </div>
+    </div>
+
+
+    <body>
+    <div id="outer">
+        <p id="info">这是第几张图片</p>
+        <img src="http://localhost:8080/tupian" alt="" style="width: 560px;height: 300px">
+        <button id="prev" onclick="getProImg()">上一张</button>
+        <button id="nextv" onclick="getNextImg()">下一张</button>
+    </div>
+    </body>
+</body>
+</html>
